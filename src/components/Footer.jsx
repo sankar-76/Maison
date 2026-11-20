@@ -1,0 +1,5 @@
+import {useState} from 'react';import {Link} from 'react-router-dom';import {subscribe} from '../services/api.js';
+export function Newsletter(){const [e,setE]=useState('');const [m,setM]=useState('');
+ const sub=async ev=>{ev.preventDefault();if(!/^\S+@\S+\.\S+$/.test(e))return setM('Please enter a valid email address.');await subscribe(e);setM('Thank you. Demo subscription recorded (no email service connected).');setE('')};
+ return <form className="news" onSubmit={sub} noValidate><label htmlFor="nl">Join the list</label><div><input id="nl" type="email" value={e} onChange={x=>setE(x.target.value)} placeholder="Email address"/><button>Subscribe</button></div><p role="status">{m}</p></form>}
+export default function Footer(){return <footer className="footer"><Newsletter/><div className="fcols"><div><b>MAISON</b><p>Contemporary essentials, designed in Milan.</p></div><div><Link to="/shop">Shop</Link><Link to="/about">About</Link><Link to="/contact">Contact</Link></div><div><Link to="/wishlist">Wishlist</Link><Link to="/cart">Bag</Link></div></div><small>© 2026 MAISON. Demo storefront.</small></footer>}

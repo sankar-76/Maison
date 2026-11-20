@@ -1,0 +1,10 @@
+import {useEffect,useRef,lazy,Suspense} from 'react';import {Routes,Route,useLocation,Link} from 'react-router-dom';import gsap from 'gsap';import {ScrollTrigger} from 'gsap/ScrollTrigger';import Lenis from 'lenis';
+import Navbar from './components/Navbar.jsx';import Footer from './components/Footer.jsx';import CartDrawer from './components/CartDrawer.jsx';
+const Home=lazy(()=>import('./pages/Home.jsx'));const Shop=lazy(()=>import('./pages/Shop.jsx'));const Product=lazy(()=>import('./pages/Product.jsx'));const Pages=lazy(()=>import('./pages/Pages.jsx'));
+const P=n=>lazy(()=>import('./pages/Pages.jsx').then(m=>({default:m[n]})));const Cart=P('Cart'),Checkout=P('Checkout'),Wishlist=P('Wishlist'),About=P('About'),Contact=P('Contact'),Success=P('Success');
+export default function App(){const {pathname}=useLocation();const main=useRef();
+ useEffect(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const l=new Lenis();const t=time=>l.raf(time*1000);l.on('scroll',ScrollTrigger.update);gsap.ticker.add(t);gsap.ticker.lagSmoothing(0);window.__lenis=l;return()=>{gsap.ticker.remove(t);l.destroy()}},[]);
+ useEffect(()=>{window.__lenis?window.__lenis.scrollTo(0,{immediate:true}):window.scrollTo(0,0);gsap.fromTo(main.current,{opacity:0,y:16},{opacity:1,y:0,duration:.6,ease:'power2.out'})},[pathname]);
+ return <><Navbar/><CartDrawer/><main ref={main}><Suspense fallback={<div className="loader">MAISON</div>}><Routes><Route path="/" element={<Home/>}/><Route path="/shop" element={<Shop/>}/><Route path="/product/:id" element={<Product/>}/><Route path="/cart" element={<Cart/>}/>
+  <Route path="/checkout" element={<Checkout/>}/><Route path="/wishlist" element={<Wishlist/>}/><Route path="/about" element={<About/>}/><Route path="/contact" element={<Contact/>}/><Route path="/order-success" element={<Success/>}/>
+  <Route path="*" element={<section className="pad center"><h1 className="xl">404</h1><p>This page doesn't exist.</p><Link className="btn dark" to="/">Back home</Link></section>}/></Routes></Suspense></main><Footer/></>}

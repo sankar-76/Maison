@@ -1,0 +1,10 @@
+import {useEffect,useRef} from 'react';import {Link} from 'react-router-dom';import {X,Minus,Plus} from 'lucide-react';import gsap from 'gsap';import {useStore} from '../context/StoreContext.jsx';import {Img} from './Common.jsx';
+export function CartLines(){const {cart,setQty}=useStore();return cart.map(i=><div className="line" key={i.key}><Img src={i.image} alt={i.name}/><div><Link to={`/product/${i.id}`}>{i.name}</Link><small>{i.color} / {i.size}</small>
+ <div className="qty"><button aria-label="Decrease quantity" onClick={()=>setQty(i.key,i.qty-1)}><Minus size={14}/></button><span>{i.qty}</span><button aria-label="Increase quantity" onClick={()=>setQty(i.key,i.qty+1)}><Plus size={14}/></button></div></div>
+ <div className="right">${(i.price*i.qty).toFixed(2)}<button className="linkbtn" onClick={()=>setQty(i.key,0)}>Remove</button></div></div>)}
+export default function CartDrawer(){const {drawer,setDrawer,cart,sub}=useStore();const ref=useRef();
+ useEffect(()=>{gsap.to(ref.current,{xPercent:drawer?0:100,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:.6,ease:'power4.inOut'});if(drawer)ref.current.focus()},[drawer]);
+ useEffect(()=>{const k=e=>e.key==='Escape'&&setDrawer(false);addEventListener('keydown',k);return()=>removeEventListener('keydown',k)},[setDrawer]);
+ return <><div className={'scrim'+(drawer?' on':'')} onClick={()=>setDrawer(false)}/><aside ref={ref} tabIndex={-1} className="cartdrawer" style={{transform:'translateX(100%)'}} role="dialog" aria-label="Shopping bag">
+  <div className="dh"><h2>Bag</h2><button aria-label="Close bag" onClick={()=>setDrawer(false)}><X/></button></div><div className="dbody">{cart.length?<CartLines/>:<p className="empty">Your bag is empty.</p>}</div>
+  {cart.length>0&&<div className="df"><p><span>Subtotal</span><b>${sub.toFixed(2)}</b></p><Link className="btn" to="/cart" onClick={()=>setDrawer(false)}>View bag</Link><Link className="btn dark" to="/checkout" onClick={()=>setDrawer(false)}>Checkout</Link></div>}</aside></>}

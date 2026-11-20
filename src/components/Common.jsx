@@ -1,0 +1,8 @@
+import {Link} from 'react-router-dom';import {Heart} from 'lucide-react';import {useRef} from 'react';import gsap from 'gsap';import {useStore} from '../context/StoreContext.jsx';
+export const Img=({src,alt,...p})=><img src={src} alt={alt} loading="lazy" onError={e=>{e.currentTarget.style.background='#d9d0c1';e.currentTarget.removeAttribute('src')}} {...p}/>;
+export function Magnetic({children,...p}){const r=useRef();const mv=e=>{if(matchMedia('(hover:none)').matches)return;const b=r.current.getBoundingClientRect();gsap.to(r.current,{x:(e.clientX-b.left-b.width/2)*.25,y:(e.clientY-b.top-b.height/2)*.25,duration:.3})};
+ return <Link ref={r} onMouseMove={mv} onMouseLeave={()=>gsap.to(r.current,{x:0,y:0,duration:.5,ease:'elastic.out(1,.4)'})} {...p}>{children}</Link>}
+export function ProductCard({p,list}){const {wish,toggleWish,add}=useStore();const on=wish.includes(p.id);
+ return <article className={'card'+(list?' list':'')} data-reveal><Link to={`/product/${p.id}`} className="cardimg"><Img src={p.images[0]} alt={p.name}/><Img className="alt" src={p.images[1]} alt=""/>{p.isNew&&<span className="tag">New</span>}{!p.inStock&&<span className="tag out">Sold out</span>}</Link>
+  <button className="heart" aria-label={on?'Remove from wishlist':'Add to wishlist'} aria-pressed={on} onClick={()=>toggleWish(p.id)}><Heart size={18} fill={on?'#111':'none'}/></button>
+  <div className="cardinfo"><Link to={`/product/${p.id}`}>{p.name}</Link><p>{p.originalPrice&&<s>${p.originalPrice}</s>} ${p.price}</p>{list&&<small>{p.description}</small>}<button className="quick" onClick={()=>add(p,p.sizes.includes("M")?"M":p.sizes[0],p.colors[0])}>Add to bag</button></div></article>}
